@@ -2,24 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    public function store(Request $request) {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:completa,não completa',
-        ]);
-
-        $task = Task::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'status' => $request->status,
-        ]);
-
+    public function store(TaskRequest $request) {
+        $task = Task::create($request->validated());
         return response()->json(['message' => 'Tarefa criada com sucesso', 'data' => $task], 201);
     }
 
@@ -41,15 +31,9 @@ class TaskController extends Controller
         return response()->json(['data' => $task], 200);
     }
 
-    public function update(Request $request, $id) {
+    public function update(TaskRequest $request, $id) {
         $task = Task::findOrFail($id);
-
-        $request->validate([
-            'status' => 'required|in:completa,não completa',
-        ]);
-
-        $task->status = $request->status;
-        $task->save();
+        $task->update($request->validated());
 
         return response()->json(['message' => 'Status da tarefa atualizado', 'data' => $task], 200);
     }
