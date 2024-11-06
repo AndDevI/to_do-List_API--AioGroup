@@ -20,7 +20,7 @@ class TaskController extends Controller
             'status' => $request->status,
         ]);
 
-        return response()->json($task, 201);
+        return response()->json(['message' => 'Tarefa criada com sucesso', 'data' => $task], 201);
     }
 
     public function index(Request $request) {
@@ -32,7 +32,13 @@ class TaskController extends Controller
 
         $tasks = $query->get();
 
-        return response()->json($tasks);
+        return response()->json(['data' => $tasks], 200);
+    }
+
+    public function show($id) {
+        $task = Task::findOrFail($id);
+
+        return response()->json(['data' => $task], 200);
     }
 
     public function update(Request $request, $id) {
@@ -45,14 +51,13 @@ class TaskController extends Controller
         $task->status = $request->status;
         $task->save();
 
-        return response()->json($task);
+        return response()->json(['message' => 'Status da tarefa atualizado', 'data' => $task], 200);
     }
 
     public function destroy($id) {
         $task = Task::findOrFail($id);
         $task->delete();
 
-        return response()->json(['message' => 'Tarefa deletada com sucesso']);
+        return response()->json(['message' => 'Tarefa deletada com sucesso'], 200);
     }
 }
-
