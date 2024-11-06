@@ -2,46 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\TaskService;
 use App\Http\Requests\TaskRequest;
-use App\Models\Task;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    public function store(TaskRequest $request) {
-        $task = Task::create($request->validated());
-        return response()->json(['message' => 'Tarefa criada com sucesso', 'data' => $task], 201);
+    protected $taskService;
+
+    public function __construct(TaskService $taskService) {
+        $this->taskService = $taskService;
     }
 
     public function index(Request $request) {
-        $query = Task::query();
-
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $tasks = $query->get();
-
+        $tasks = $this->taskService->getAllTasks($request->status);
         return response()->json(['data' => $tasks], 200);
     }
 
-    public function show($id) {
-        $task = Task::findOrFail($id);
-
-        return response()->json(['data' => $task], 200);
+    public function store(TaskRequest $request) {
+        $task = $this->taskService->createTask($request);
+        return response()->json(['message' => 'Tarefa criada com sucesso', 'data' => $task], 201);
     }
 
     public function update(TaskRequest $request, $id) {
-        $task = Task::findOrFail($id);
-        $task->update($request->validated());
-
+        $task = $this->taskService->updateTask($id, $request);
         return response()->json(['message' => 'Status da tarefa atualizado', 'data' => $task], 200);
     }
 
     public function destroy($id) {
-        $task = Task::findOrFail($id);
-        $task->delete();
-
+        $this->taskService->deleteTask($id);
         return response()->json(['message' => 'Tarefa deletada com sucesso'], 200);
     }
 }
