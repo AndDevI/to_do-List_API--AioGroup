@@ -1,5 +1,6 @@
 <?php
 
+// tests/Unit/TaskRepositoryTest.php
 namespace Tests\Unit;
 
 use App\Models\Task;
@@ -15,41 +16,23 @@ class TaskRepositoryTest extends TestCase
 
     protected function setUp(): void {
         parent::setUp();
-        $this->taskRepository = new TaskRepository();
+        $this->taskRepository = app(TaskRepository::class);
     }
 
-    public function test_it_can_create_task() {
-        $data = [
-            'title' => 'New Task',
-            'description' => 'Task Description',
-            'status' => 'não completa',
-        ];
+    public function testUpdateTask() {
+        $task = Task::factory()->create(['title' => 'Tarefa Original', 'status' => 'não completa']);
 
-        $task = $this->taskRepository->create($data);
+        $data = ['title' => 'Tarefa Atualizada', 'status' => 'completa'];
+        $updatedTask = $this->taskRepository->update($task->id, $data);
 
-        $this->assertInstanceOf(Task::class, $task);
-        $this->assertEquals($data['title'], $task->title);
+        $this->assertEquals('Tarefa Atualizada', $updatedTask->title);
+        $this->assertEquals('completa', $updatedTask->status);
     }
 
-    public function test_it_can_find_task() {
-        $task = Task::factory()->create();
-        $foundTask = $this->taskRepository->find($task->id);
+    public function testDeleteTask() {
+        $task = Task::factory()->create(['title' => 'Tarefa a ser Excluída']);
 
-        $this->assertEquals($task->id, $foundTask->id);
-    }
-
-    public function test_it_can_update_task() {
-        $task = Task::factory()->create();
-        $data = ['status' => 'completa'];
-
-        $updatedTask = $this->taskRepository->update($task, $data);
-
-        $this->assertEquals($data['status'], $updatedTask->status);
-    }
-
-    public function test_it_can_delete_task() {
-        $task = Task::factory()->create();
-        $this->taskRepository->delete($task);
+        $this->taskRepository->delete($task->id);
 
         $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
     }

@@ -24,12 +24,15 @@ class TaskRepository
         return Task::create($data);
     }
 
-    public function update(Task $task, array $data) {
-        $task->update($data);
-        return $task;
+    public function update($id, array $data) { 
+        $task = $this->find($id); 
+        $task->update($data);     
+        return $task;             
     }
 
-    public function delete(Task $task) {
-        $task->delete();
+    public function delete($id) { 
+        $task = $this->find($id); 
+        return $task->delete();   
     }
 }
+

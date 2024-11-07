@@ -1,9 +1,10 @@
 <?php
 
+// app/Services/TaskService.php
+
 namespace App\Services;
 
 use App\Repositories\TaskRepository;
-use App\Http\Requests\TaskRequest;
 
 class TaskService
 {
@@ -13,25 +14,20 @@ class TaskService
         $this->taskRepository = $taskRepository;
     }
 
-    public function getAllTasks($status = null){
+    public function getAllTasks($status = null) {
         return $this->taskRepository->getAll($status);
     }
 
-    public function createTask(TaskRequest $request) {
-        $data = $request->validated();
-
+    public function createTask(array $data) {
         return $this->taskRepository->create($data);
     }
- 
-    public function updateTask($id, TaskRequest $request) {
-        $task = $this->taskRepository->find($id);
-        $data = $request->validated();
 
-        return $this->taskRepository->update($task, $data);
+    public function updateTask($id, array $data) {
+        return $this->taskRepository->update($id, $data);
     }
 
     public function deleteTask($id) {
-        $task = $this->taskRepository->find($id);
-        $this->taskRepository->delete($task);
+        return $this->taskRepository->delete($id);
     }
 }
+

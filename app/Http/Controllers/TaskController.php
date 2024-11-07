@@ -20,12 +20,12 @@ class TaskController extends Controller
     }
 
     public function store(TaskRequest $request) {
-        $task = $this->taskService->createTask($request);
+        $task = $this->taskService->createTask($request->validated()); 
         return response()->json(['message' => 'Tarefa criada com sucesso', 'data' => $task], 201);
     }
 
     public function update(TaskRequest $request, $id) {
-        $task = $this->taskService->updateTask($id, $request);
+        $task = $this->taskService->updateTask($id, $request->validated()); 
         return response()->json(['message' => 'Status da tarefa atualizado', 'data' => $task], 200);
     }
 
